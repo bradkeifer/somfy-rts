@@ -7,7 +7,7 @@ TCP API bindings for the Somfy RTS protocol
 Run the following to install:
 
 ```python
-pip install somfy_rts
+pip install somfy-rts
 ```
 
 ## Usage
