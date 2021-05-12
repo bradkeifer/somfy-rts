@@ -1,6 +1,3 @@
-"""
-This module provides support for the Somfy RS485 RTS Transmitter functions
-"""
 # Copyright (c) 2020 Brad Keifer
 #
 # This file is part of the Somfy RS485 RTS package.
@@ -163,8 +160,11 @@ LOGGING_LEVEL = {
 class RTSProtocol(object):
     """Somfy RS485 RTS Transmitter protocol class
 
-    This is the main class for communication with a multi-drop network of Somfy
+    This is the class for communication with a multi-drop network of Somfy
     RS485 RTS Transmitters.
+
+    The docstring for a class should summarize its behaviour and list the 
+    public methods and instance variables.
 
     General usage flow:
 
@@ -175,6 +175,9 @@ class RTSProtocol(object):
       on the RS485 network
     * Use control_position() to control the end device
     * Use disconnect() to disconnect from the RS485 network
+
+    Attributes:
+	connection (str, optional): type of connection socket or serial (default: socket)
     """
     
     UP = 0x01
@@ -183,8 +186,12 @@ class RTSProtocol(object):
     MY = 0x04
         
     def __init__(self, connection="socket"):
-        """connection defines the form of connection to the RTS Transmitter.
+        """Class constructor
+
+        connection defines the form of connection to the RTS Transmitter.
+
         Set connection to "serial" to use a serial connection.
+
         Set connection to "socket" to use a socket, which is the default.
         """
         
@@ -469,7 +476,13 @@ class RTSProtocol(object):
         return self._node_labels
         
     def get_node_label(self, node_addr):
-        """Return the node label"""
+        """Get the node label
+
+        :param node_addr: the node address for which the label is sought
+        :type node_addr: int
+        :returns: the node label. None on error
+        :rtype: str
+        """
         
         self._easy_log(RTS_LOG_DEBUG,
                        f'get_node_label(): Function called with '

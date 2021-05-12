@@ -3,8 +3,38 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to somfy-rts's documentation!
-=====================================
+Welcome to somfy_rts documentation
+==================================
+
+Introduction
+------------
+The somfy_rts package has been developed to provide an API for communication
+with the Somfy RS485 RTS Transmitter(s) to control devices such as blinds,
+shutters, awnings or lights. Multiple transmitters may be
+connected on a single RS485 multi-drop network.
+
+Connectivity is either via a TCP socket or a serial port.
+
+Tutorial
+--------
+
+API Reference
+-------------
+.. automodule:: somfy_rts.rts
+   :members:
+
+Developer documentation
+-----------------------
+The package has currently only been tested and used for the control of blinds
+using a socket connection. Feel free to test it for other configurations and
+provide feedback to the author. Bugs can be reported 
+`here <https://github.com/bradkeifer/somfy-rts/issues>`_.
+
+To obtain the full code, you can clone the git repository:
+
+.. code-block:: bash
+
+   git clone https://github.com/bradkeifer/somfy-rts
 
 .. toctree::
    :maxdepth: 2
@@ -18,3 +48,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
