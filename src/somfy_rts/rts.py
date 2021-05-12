@@ -742,10 +742,10 @@ class RTSProtocol(object):
                 send ping messages to the RTS Transmitter.
         
         Returns:
-            True for success, False for failure.
+            bool: True for success, False for failure.
 
         Raises:
-            ValueError if any of the parameters are invalid.
+            ValueError: if any of the parameters are invalid.
         """
 
         if host is None or len(host) == 0:
