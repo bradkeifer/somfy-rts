@@ -630,7 +630,17 @@ class RTSProtocol(object):
 
 
     def control_position(self, node_addr, command, channel=int):
-        """Issue a control position command"""
+        """Issue a control position command
+        
+        :param node_addr: the node address.
+        :type node_addr: int
+        :param command: the position command. One of UP, DOWN, STOP or MY.
+        :type: command: constant
+        :param channel: the channel to use. Must be in the range 0-15.
+        :type channel: int
+        :returns: True for success, False for failure.
+        :rtype: boolean
+        """
                 
         # Byte 10: Data byte 1: Channel Number. min=0, max=15
         if channel < 0 or channel > 15:
@@ -705,7 +715,8 @@ class RTSProtocol(object):
         return success
 
     def enable_logger(self, logger=None):
-        """ Enables a logger to send log messages to """
+        """ Enables a logger to send log messages to 
+        """
         if logger is None:
             if self._logger is not None:
                 # Do not replace existing logger
@@ -714,17 +725,27 @@ class RTSProtocol(object):
         self._logger = logger
 
     def disable_logger(self):
+        """ Disables a logger to send log messages to 
+        """
         self._logger = None
 
     def connect(self, host, port=4660, keepalive=PING_PERIOD):
         """Connect to a RTS Transmitter network
 
-        host is the hostname or IP address of the ethernet to serial converter
-        port is the network port of the ethernet to serial converter to connect to.
-        Defaults to 4660.
-        keepalive: Maximum period in seconds between communications with the
+        Makes a TCP connection to a RTS Transmitter network and discovers all nodes on the network.
+
+        :param host: the hostname or IP address.
+        :param port: the network port. Defaults to 4660.
+        :param keepalive: Maximum period in seconds between communications with the
         RTS Transmitter. If no other messages are being exchanged, this controls the
         rate at which the client will send ping messages to the RTS Transmitter.
+        :returns: True for success, False for failure.
+        :rtype: boolean
+
+        Raises
+        ------
+        ValueError
+            If any of the parameters are invalid.
         """
 
         if host is None or len(host) == 0:
