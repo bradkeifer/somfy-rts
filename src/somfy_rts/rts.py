@@ -734,16 +734,18 @@ class RTSProtocol(object):
 
         Makes a TCP connection to a RTS Transmitter network and discovers all nodes on the network.
 
-        :param host: the hostname or IP address.
-        :param port: the network port. Defaults to 4660.
-        :param keepalive: Maximum period in seconds between communications with the RTS Transmitter. If no other messages are being exchanged, this controls the rate at which the client will send ping messages to the RTS Transmitter.
-        :returns: True for success, False for failure.
-        :rtype: boolean
+        Parameters:
+            host: the hostname or IP address.
+            port (int): the network port. Defaults to 4660.
+            keepalive (int): Maximum period in seconds between communications with the RTS Transmitter. 
+                If no other messages are being exchanged, this controls the rate at which the client will 
+                send ping messages to the RTS Transmitter.
+        
+        Returns:
+            True for success, False for failure.
 
-        Raises
-        ------
-        ValueError
-            If any of the parameters are invalid.
+        Raises:
+            ValueError if any of the parameters are invalid.
         """
 
         if host is None or len(host) == 0:
