@@ -942,10 +942,11 @@ class RTSProtocol(object):
 
         Returns:
             The application software version as a tuple. The tuple structure is:
-                * App Reference: 24-bit number
-                * App Index Letter: 8-bit ASCII character
-                * App Index Number: 8-bit number
-                * App Profile: 8-bit number
+            
+            * App Reference: 24-bit number
+            * App Index Letter: 8-bit ASCII character
+            * App Index Number: 8-bit number
+            * App Profile: 8-bit number
             
             A value of None is returned if a protocol error is experienced.
         
@@ -1013,7 +1014,7 @@ class RTSProtocol(object):
 
             An ERROR will be logged and False returned if an invalid node_addr
             or label is supplied.
-            
+
             An explanatory ERROR will be logged and False returned if the label is 
             not able to be set.
         """
