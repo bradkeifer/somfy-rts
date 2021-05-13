@@ -10,10 +10,8 @@ Run the following to install:
 pip install somfy-rts
 ```
 
-## Usage
+Installation in a virtual environment is recommended.
 
-```python
-from somfy_rts import rts
+## Documentation
 
-# TODO: Add function examples - see if this can be self documenting from the code?
-```
+Further documentation can be found on readthedocs [here](https://somfy-rts.readthedocs.io).
