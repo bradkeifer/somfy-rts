@@ -167,8 +167,7 @@ class RTSProtocol(object):
         * Use connect() to connect to a RS485 network
         * Use enable_logger() to enable logging
         * Use disable_logger() to disable logging
-        * Use get_nodes() to obtain a dictionary of all RTS Transmitter nodes
-        on the RS485 network
+        * Use get_nodes() to obtain a dictionary of all RTS Transmitter nodes on the RS485 network
         * Use control_position() to control the end device
         * Use disconnect() to disconnect from the RS485 network
 
@@ -181,10 +180,6 @@ class RTSProtocol(object):
     Args:
         connection: Connection type to use. Must be a string with a value of
         "socket" or "serial". 
-    
-    Todo:
-        * Support for serial connections is not yet implemented.
-        * Support for dimming and tilting is not yet implemented.
     """
     
     UP = 0x01
