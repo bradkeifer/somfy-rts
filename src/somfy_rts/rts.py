@@ -937,17 +937,20 @@ class RTSProtocol(object):
     def get_node_app_version(self, node_addr):
         """Returns a tuple containing the application software information.
         
+        The tuple structure is:
+            * App Reference: 24-bit number
+            * App Index Letter: 8-bit ASCII character
+            * App Index Number: 8-bit number
+            * App Profile: 8-bit number
+
         Args:
             node_addr (int): The node address for which the information is required. 
 
         Returns:
-            The application software version as a tuple. The tuple structure is:
-                App Reference as a 24-bit number
-                App Index Letter as a 8-bit ASCII character
-                App Index Number as a 8-bit number
-                App Profile as a 8-bit number
+            A tuple containing the application software information.
             
-            A value of None is returned if a protocol error is experienced.
+            An explanatory ERROR is logged and a value of None is returned if a protocol 
+            error is experienced.
         
         Raises:
             ValueError: If invalid node_addr is passed
