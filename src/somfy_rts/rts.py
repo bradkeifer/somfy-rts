@@ -164,22 +164,20 @@ class RTSProtocol(object):
     RS485 RTS Transmitters.
 
     General usage flow:
-        * Use connect() to connect to a RS485 network
         * Use enable_logger() to enable logging
-        * Use disable_logger() to disable logging
+        * Use connect() to connect to a RS485 network
         * Use get_nodes() to obtain a dictionary of all RTS Transmitter nodes on the RS485 network
         * Use control_position() to control the end device
         * Use disconnect() to disconnect from the RS485 network
 
     Attributes:
-        RTSProtocol.UP: Constant for the UP command.
-        RTSProtocol.DOWN: Constant for the DOWN command.
-        RTSProtocol.STOP: Constant for the STOP command.
-        RTSProtocol.MY: Constant for the MY command.
+        UP: Constant for the UP command.
+        DOWN: Constant for the DOWN command.
+        STOP: Constant for the STOP command.
+        MY: Constant for the MY command.
     
     Args:
-        connection: Connection type to use. Must be a string with a value of
-        "socket" or "serial". 
+        connection: Connection type to use. Must be a string with a value of "socket" or "serial". 
     """
     
     UP = 0x01
