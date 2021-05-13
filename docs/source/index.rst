@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to somfy_rts documentation
-==================================
+somfy_rts Documentation
+=======================
 
 Introduction
 ------------
@@ -15,11 +15,9 @@ connected on a single RS485 multi-drop network.
 
 Connectivity is either via a TCP socket or a serial port.
 
-Tutorial
---------
-
 API Reference
 -------------
+
 .. automodule:: somfy_rts.rts
    :members:
 

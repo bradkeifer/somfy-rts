@@ -170,14 +170,18 @@ class RTSProtocol(object):
         * Use control_position() to control the end device
         * Use disconnect() to disconnect from the RS485 network
 
-    Attributes:
-        UP: Constant for the UP command.
-        DOWN: Constant for the DOWN command.
-        STOP: Constant for the STOP command.
-        MY: Constant for the MY command.
-    
-    Args:
-        connection: Connection type to use. Must be a string with a value of "socket" or "serial". 
+    .. list-table:: Class Constants
+       :widths: 20 80
+       :header-rows: 0
+
+       * - UP
+         - Constant for the UP command
+       * - DOWN
+         - Constant for the DOWN command
+       * - STOP
+         - Constant for the STOP command
+       * - MY
+         - Constant for the MY command
     """
     
     UP = 0x01
@@ -186,13 +190,16 @@ class RTSProtocol(object):
     MY = 0x04
         
     def __init__(self, connection="socket"):
-        """Class constructor
+        """Class constructor.
 
-        connection defines the form of connection to the RTS Transmitter.
+        Obtains connection type and initialises private attributes.
 
-        Set connection to "serial" to use a serial connection.
+        Args:
+            connection (str): Type of connection to use. Must be one of
+                "socket" or "serial".
 
-        Set connection to "socket" to use a socket, which is the default.
+        Raises:
+            ValueError: If `connection` is not one of "socket" or "serial".
         """
         
         if connection.lower() not in ('serial', 'socket'):
