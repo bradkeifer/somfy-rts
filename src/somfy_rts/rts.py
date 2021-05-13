@@ -1010,8 +1010,10 @@ class RTSProtocol(object):
         
         Returns:
             True for success and False for failure. 
+
             An ERROR will be logged and False returned if an invalid node_addr
             or label is supplied.
+            
             An explanatory ERROR will be logged and False returned if the label is 
             not able to be set.
         """
@@ -1194,7 +1196,7 @@ class RTSProtocol(object):
         return data
 
     def get_channel_mode(self, node_addr, channel=int):
-        """Returns the mode used for the selected channel as a tuple.
+        """Get the mode used for the selected channel as a tuple.
                 
         Args:
             node_addr (int): The node address for which the information is required. 
@@ -1202,7 +1204,7 @@ class RTSProtocol(object):
 
         Returns:
             The mode used for the selected channel as a tuple. The tuple structure is:
-            
+
                 * US/CE mode: 0x00 = CE Mode, 0x01 = US Mode (default)
                 * Rolling/Tilting mode: 0x00 = Rolling mode (default), 0x01 = Tilting mode
                 * Modulis mode: 0x00 = Normal mode, 0x01 = Modulis mode (default)
