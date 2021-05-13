@@ -163,21 +163,28 @@ class RTSProtocol(object):
     This is the class for communication with a multi-drop network of Somfy
     RS485 RTS Transmitters.
 
-    The docstring for a class should summarize its behaviour and list the 
-    public methods and instance variables.
-
     General usage flow:
-
-    * Use connect() to connect to a RS485 network
-    * Use enable_logger() to enable logging
-    * Use disable_logger() to disable logging
-    * Use get_nodes() to obtain a dictionary of all RTS Transmitter nodes
-      on the RS485 network
-    * Use control_position() to control the end device
-    * Use disconnect() to disconnect from the RS485 network
+        * Use connect() to connect to a RS485 network
+        * Use enable_logger() to enable logging
+        * Use disable_logger() to disable logging
+        * Use get_nodes() to obtain a dictionary of all RTS Transmitter nodes
+        on the RS485 network
+        * Use control_position() to control the end device
+        * Use disconnect() to disconnect from the RS485 network
 
     Attributes:
-	connection (str, optional): type of connection socket or serial (default: socket)
+        RTSProtocol.UP: Constant for the UP command.
+        RTSProtocol.DOWN: Constant for the DOWN command.
+        RTSProtocol.STOP: Constant for the STOP command.
+        RTSProtocol.MY: Constant for the MY command.
+    
+    Args:
+        connection: Connection type to use. Must be a string with a value of
+        "socket" or "serial". 
+    
+    Todo:
+        * Support for serial connections is not yet implemented.
+        * Support for dimming and tilting is not yet implemented.
     """
     
     UP = 0x01
@@ -329,8 +336,9 @@ class RTSProtocol(object):
     def _get_node_addresses(self):
         """Discover all RTS Transmitters on the RS485 network.
         
-        
-        Returns a list of node addresses
+        Returns:
+            A list of integer node addresses. 
+            An explanatory ERROR will be logged and program will exit if an error is experienced.
         """
         
         # Return existing list of already known.
@@ -478,10 +486,14 @@ class RTSProtocol(object):
     def get_node_label(self, node_addr):
         """Get the node label
 
-        :param node_addr: the node address for which the label is sought
-        :type node_addr: int
-        :returns: the node label. None on error
-        :rtype: str
+        Args:
+            node_addr: the node address as an int for which the label is sought.
+        
+        Returns:
+            The node label as a string. 
+            
+            An explanatory ERROR will be logged an a value of None returned if a
+            protocol error is experienced.
         """
         
         self._easy_log(RTS_LOG_DEBUG,
@@ -630,16 +642,18 @@ class RTSProtocol(object):
 
 
     def control_position(self, node_addr, command, channel=int):
-        """Issue a control position command
+        """Issue a control position command.
         
-        :param node_addr: the node address.
-        :type node_addr: int
-        :param command: the position command. One of UP, DOWN, STOP or MY.
-        :type: command: constant
-        :param channel: the channel to use. Must be in the range 0-15.
-        :type channel: int
-        :returns: True for success, False for failure.
-        :rtype: boolean
+        Args:
+            node_addr (int): the node address.
+            command (constant): the position command. One of UP, DOWN, STOP or MY.
+            channel (int): the channel to use. Must be in the range 0-15.
+
+        Returns:
+            True for success, False for failure.
+
+            An explanatory ERROR is logged and a value of False is returned if an invalid
+            parameter is supplied or a protocol error is experienced.
         """
                 
         # Byte 10: Data byte 1: Channel Number. min=0, max=15
@@ -715,7 +729,13 @@ class RTSProtocol(object):
         return success
 
     def enable_logger(self, logger=None):
-        """ Enables a logger to send log messages to 
+        """ Enables a logger.
+
+        Enable logging using the standard python logging package (See PEP 282).
+
+        Args:
+            logger: If logger is specified, then that logging.Logger object will 
+            be used, otherwise one will be created automatically.
         """
         if logger is None:
             if self._logger is not None:
@@ -725,7 +745,7 @@ class RTSProtocol(object):
         self._logger = logger
 
     def disable_logger(self):
-        """ Disables a logger to send log messages to 
+        """ Disables the logger.
         """
         self._logger = None
 
@@ -782,7 +802,11 @@ class RTSProtocol(object):
         return self._sock
 
     def ping(self):
-        """Ping each node on the RS485 network. Always returns True."""
+        """Ping each node on the RS485 network. 
+        
+        Returns:
+            Always returns True.
+        """
         self._easy_log(RTS_LOG_DEBUG,
                        f'ping(): Pinging node addresses {self._node_addresses}')
         for node_addr in self._node_addresses:
@@ -823,17 +847,22 @@ class RTSProtocol(object):
         return self._nodes
             
     def get_node_stack_version(self, node_addr):
-        """Returns a tuple containing the protocol software information.
+        """Get the node stack version information.
         
+        The node stack information is returned as a tuple with the follwing structure:
+            * Stack Reference: 24-bit number
+            * Stack Index Letter: 8-bit ASCII character
+            * Stack Index Number: 8-bit number
+            * Stack Standard: 8-bit number
+
         Args:
             node_addr (int): The node address for which the information is required. 
 
         Returns:
-            The tuple structure is:
-                * Stack Reference: 24-bit number
-                * Stack Index Letter: 8-bit ASCII character
-                * Stack Index Number: 8-bit number
-                * Stack Standard: 8-bit number
+            The protocol software information as a tuple.
+
+            An explanatory ERROR is logged and a value of None is returned if a
+            protocol error is experienced.
         
         Raises:
             ValueError: If invalid node_addr is passed
@@ -887,19 +916,22 @@ class RTSProtocol(object):
         return stack_version
 
     def get_node_serial_number(self, node_addr):
-        """Returns the serial number as a 12-byte ASCII string.
+        """Get the serial number for the node.
         
+        The serial number is a 12-byte ASCII string. The structure is:
+            * Product NodeID: Six characters in hexadecimal representation
+            * Manufacturer ID: Two letters
+            * Year: Two digits
+            * Week: Julian Week
+            
         Args:
             node_addr (int): The node address for which the information is required. 
 
         Returns:
-            The serial number as a 12-byte ASCII string. The structure is:
-                * Product NodeID: Six characters in hexadecimal representation
-                * Manufacturer ID: Two letters
-                * Year: Two digits
-                * Week: Julian Week
+            The serial number as a 12-byte ASCII string.
             
-            A value of None is returned if a protocol error is experienced.
+            An explanatory ERROR is logged and a value of None is returned if a 
+            protocol error is experienced.
         
         Raises:
             ValueError: If invalid node_addr is passed
@@ -1116,6 +1148,9 @@ class RTSProtocol(object):
         Returns:
             The data returned by the RTS Transmitter. Format and encoding structure is
             unknown.
+
+            An explanatory ERROR is logged and value of None returned if a protocol
+            error is experienced.
         
         Raises:
             ValueError: If invalid node_addr is passed
@@ -1164,6 +1199,9 @@ class RTSProtocol(object):
             The data returned by the RTS Transmitter. Format and encoding structure is
             unknown.
         
+            An explanatory ERROR is logged and value of None returned if a protocol
+            error is experienced.
+
         Raises:
             ValueError: If invalid node_addr is passed
         """
@@ -1199,19 +1237,21 @@ class RTSProtocol(object):
         return data
 
     def get_channel_mode(self, node_addr, channel=int):
-        """Get the mode used for the selected channel as a tuple.
+        """Get the mode used for the selected channel.
+
+         The mode is returned as a tuple with the followng structure:
+            * US/CE mode: 0x00 = CE Mode, 0x01 = US Mode (default)
+            * Rolling/Tilting mode: 0x00 = Rolling mode (default), 0x01 = Tilting mode
+            * Modulis mode: 0x00 = Normal mode, 0x01 = Modulis mode (default)
+
                 
         Args:
             node_addr (int): The node address for which the information is required. 
             channel (int): The channel to get the mode for. Must be in the range 0-15.
 
         Returns:
-            The mode used for the selected channel as a tuple. The tuple structure is:
+            The mode used for the selected channel as a tuple.
 
-                * US/CE mode: 0x00 = CE Mode, 0x01 = US Mode (default)
-                * Rolling/Tilting mode: 0x00 = Rolling mode (default), 0x01 = Tilting mode
-                * Modulis mode: 0x00 = Normal mode, 0x01 = Modulis mode (default)
-            
             An explanatory ERROR is logged and a value of None is returned if an invalid
             node_addr or channel is supplied.
 
@@ -1276,11 +1316,24 @@ class RTSProtocol(object):
         return channel_mode
 
     def get_tilt_framecount(self, node_addr, channel=int):
-        """Returns the number of RTS frames the product should send on a CTRL_TILT order.
+        """Get the number of RTS frames the product should send on a CTRL_TILT order.
         
         The information is returned as a tuple consisting of two values:
-        US mode: The number of frames to send for US mode. Range is 4-255. Default is 5.
-        CE mode: The number of frames to send for CE mode. Range is 2-13. Default is 2.
+            * US mode: The number of frames to send for US mode. Range is 4-255. Default is 5.
+            * CE mode: The number of frames to send for CE mode. Range is 2-13. Default is 2.
+                
+        Args:
+            node_addr (int): The node address for which the information is required. 
+            channel (int): The channel to get the mode for. Must be in the range 0-15.
+
+        Returns:
+            Returns the number of RTS frames the product should send on a CTRL_TILT order
+            as a tuple.
+
+            An explanatory ERROR is logged and a value of None is returned if an invalid
+            node_addr or channel is supplied.
+
+            An explanatory ERROR is logged and a value of None is returned if a protocol error is experienced.
         """
 
         self._easy_log(RTS_LOG_DEBUG,
@@ -1338,9 +1391,19 @@ class RTSProtocol(object):
 
     def get_dim_framecount(self, node_addr, channel=int):
         """Returns the number of RTS frames the product should send on a CTRL_DIM order.
-        
-        The information is returned as an integer.
-        Minimum value is 4, maximum is 255, default is 5.
+
+        Args:
+            node_addr (int): The node address for which the information is required. 
+            channel (int): The channel to get the mode for. Must be in the range 0-15.
+
+        Returns:
+            Returns the number of RTS frames the product should send on a CTRL_DIM order
+            as an int. The minimum value is 4, maximum is 255, default is 5.
+
+            An explanatory ERROR is logged and a value of None is returned if an invalid
+            node_addr or channel is supplied.
+
+            An explanatory ERROR is logged and a value of None is returned if a protocol error is experienced.
         """
 
         self._easy_log(RTS_LOG_DEBUG,
@@ -1389,11 +1452,22 @@ class RTSProtocol(object):
         return dim_framecount
 
     def get_dct_lock(self, node_addr):
-        """Get the lock status of the Dry Contacts (DCT) for the node as tuple.
+        """Get the lock status of the Dry Contacts (DCT) for the node.
         
-        A value of 0 indicates Unlocked.
-        A value of 1 indicates Locked.
-        Format of tuple is (DCT1, DCT2, DCT3, DCT4, DCT5)
+        Format of tuple is (DCT1, DCT2, DCT3, DCT4, DCT5).
+            * A value of 0 indicates Unlocked.
+            * A value of 1 indicates Locked.
+
+        Args:
+            node_addr (int): The node address for which the information is required. 
+
+        Returns:
+            Returns the lock status of the Dry Contacts (DCT) for the node as a tuple.
+
+            An explanatory ERROR is logged and a value of None is returned if a protocol error is experienced.
+        
+        Raises:
+            ValueError: If an invalvid node_addr is passed.
         """
 
         self._easy_log(RTS_LOG_DEBUG,
