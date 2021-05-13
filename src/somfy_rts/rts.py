@@ -734,7 +734,7 @@ class RTSProtocol(object):
 
         Makes a TCP connection to a RTS Transmitter network and discovers all nodes on the network.
 
-        Parameters:
+        Args:
             host: the hostname or IP address.
             port (int): the network port. Defaults to 4660.
             keepalive (int): Maximum period in seconds between communications with the RTS Transmitter. 
@@ -770,6 +770,8 @@ class RTSProtocol(object):
         return c
 
     def disconnect(self):
+        """Disconnect from a RTS Transmitter network"""
+
         if self._sock is None:
             return RTS_ERR_NO_CONN
 
@@ -780,7 +782,7 @@ class RTSProtocol(object):
         return self._sock
 
     def ping(self):
-        """Ping each node on the RS485 network."""
+        """Ping each node on the RS485 network. Always returns True."""
         self._easy_log(RTS_LOG_DEBUG,
                        f'ping(): Pinging node addresses {self._node_addresses}')
         for node_addr in self._node_addresses:
@@ -794,7 +796,11 @@ class RTSProtocol(object):
         """Handles general ongoing housekeeping duties for the RTS connections.
 
         At this stage, the only housekeeping task is to ping() the nodes of the
-        socket on a regular basis
+        socket at a time period no less than the keepalive period specified in the
+        connect() call. 
+
+        Returns:
+            Always returns None.
         """
         if time.time() - self._last_tx_t >= self._keepalive:
             self._easy_log(RTS_LOG_DEBUG,
@@ -806,8 +812,10 @@ class RTSProtocol(object):
     def get_nodes(self):
         """Returns a dictionary of all RTS nodes on the RS485 Network
         
-        They will be discovered if not already known. The dictionary will contain
-        node_address as the key, and node_label as the value.
+        They will be discovered if not already known. 
+        
+        Returns:
+            A dict containing node_address as the key, and node_label as the value.
         """
         
         if not self._nodes_discovered:
@@ -817,11 +825,18 @@ class RTSProtocol(object):
     def get_node_stack_version(self, node_addr):
         """Returns a tuple containing the protocol software information.
         
-        The tuple structure is:
-        Stack Reference: 24-bit number
-        Stack Index Letter: 8-bit ASCII character
-        Stack Index Number: 8-bit number
-        Stack Standard: 8-bit number
+        Args:
+            node_addr (int): The node address for which the information is required. 
+
+        Returns:
+            The tuple structure is:
+                * Stack Reference: 24-bit number
+                * Stack Index Letter: 8-bit ASCII character
+                * Stack Index Number: 8-bit number
+                * Stack Standard: 8-bit number
+        
+        Raises:
+            ValueError: If invalid node_addr is passed
         """
 
         self._easy_log(RTS_LOG_DEBUG,
@@ -874,11 +889,20 @@ class RTSProtocol(object):
     def get_node_serial_number(self, node_addr):
         """Returns the serial number as a 12-byte ASCII string.
         
-        The serial number structure is:
-        Product NodeID: Six characters in hexadecimal representation
-        Manufacturer ID: Two letters
-        Year: Two digits
-        Week: Julian Week
+        Args:
+            node_addr (int): The node address for which the information is required. 
+
+        Returns:
+            The serial number as a 12-byte ASCII string. The structure is:
+                * Product NodeID: Six characters in hexadecimal representation
+                * Manufacturer ID: Two letters
+                * Year: Two digits
+                * Week: Julian Week
+            
+            A value of None is returned if a protocol error is experienced.
+        
+        Raises:
+            ValueError: If invalid node_addr is passed
         """
 
         self._easy_log(RTS_LOG_DEBUG,
@@ -913,11 +937,20 @@ class RTSProtocol(object):
     def get_node_app_version(self, node_addr):
         """Returns a tuple containing the application software information.
         
-        The tuple structure is:
-        App Reference: 24-bit number
-        App Index Letter: 8-bit ASCII character
-        App Index Number: 8-bit number
-        App Profile: 8-bit number
+        Args:
+            node_addr (int): The node address for which the information is required. 
+
+        Returns:
+            The application software version as a tuple. The tuple structure is:
+                * App Reference: 24-bit number
+                * App Index Letter: 8-bit ASCII character
+                * App Index Number: 8-bit number
+                * App Profile: 8-bit number
+            
+            A value of None is returned if a protocol error is experienced.
+        
+        Raises:
+            ValueError: If invalid node_addr is passed
         """
 
         self._easy_log(RTS_LOG_DEBUG,
@@ -970,8 +1003,17 @@ class RTSProtocol(object):
     def set_node_label(self, node_addr, label):
         """Set the user-defined text label for the node.
         
-        The node address and new label must be supplied as arguments.
-        The function will return True for success and False for failure.
+        Args:
+            node_addr (int): Node address to set the label for.
+            label (str): The new label to be applied. Must be alphanumeric
+                ASCII with a maximum length of 16 characters.
+        
+        Returns:
+            True for success and False for failure. 
+            An ERROR will be logged and False returned if an invalid node_addr
+            or label is supplied.
+            An explanatory ERROR will be logged and False returned if the label is 
+            not able to be set.
         """
         
         self._easy_log(RTS_LOG_DEBUG,
@@ -1061,7 +1103,17 @@ class RTSProtocol(object):
         """Returns the network communication diagnostics.
         
         Encoding structure of the data frame is unknown due to inability to find
-        documentation.
+        appropriate documentation.
+
+        Args:
+            node_addr (int): The node address for which the information is required. 
+
+        Returns:
+            The data returned by the RTS Transmitter. Format and encoding structure is
+            unknown.
+        
+        Raises:
+            ValueError: If invalid node_addr is passed
         """
 
         self._easy_log(RTS_LOG_DEBUG,
@@ -1099,6 +1151,16 @@ class RTSProtocol(object):
         
         Encoding structure of the data frame is unknown due to inability to find
         documentation.
+
+        Args:
+            node_addr (int): The node address for which the information is required. 
+
+        Returns:
+            The data returned by the RTS Transmitter. Format and encoding structure is
+            unknown.
+        
+        Raises:
+            ValueError: If invalid node_addr is passed
         """
 
         self._easy_log(RTS_LOG_DEBUG,
@@ -1133,11 +1195,22 @@ class RTSProtocol(object):
 
     def get_channel_mode(self, node_addr, channel=int):
         """Returns the mode used for the selected channel as a tuple.
-        
-        The mode information is:
-        US/CE mode: 0x00 = CE Mode, 0x01 = US Mode (default)
-        Rolling/Tilting mode: 0x00 = Rolling mode (default), 0x01 = Tilting mode
-        Modulis mode: 0x00 = Normal mode, 0x01 = Modulis mode (default)
+                
+        Args:
+            node_addr (int): The node address for which the information is required. 
+            channel (int): The channel to get the mode for. Must be in the range 0-15.
+
+        Returns:
+            The mode used for the selected channel as a tuple. The tuple structure is:
+            
+                * US/CE mode: 0x00 = CE Mode, 0x01 = US Mode (default)
+                * Rolling/Tilting mode: 0x00 = Rolling mode (default), 0x01 = Tilting mode
+                * Modulis mode: 0x00 = Normal mode, 0x01 = Modulis mode (default)
+            
+            An explanatory ERROR is logged and a value of None is returned if an invalid
+            node_addr or channel is supplied.
+
+            An explanatory ERROR is logged and a value of None is returned if a protocol error is experienced.
         """
 
         self._easy_log(RTS_LOG_DEBUG,
