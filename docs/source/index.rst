@@ -3,6 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. toctree
+   :maxdepth: 2
+   :caption: Contents:
+
+
 somfy_rts Documentation
 =======================
 
@@ -33,12 +38,6 @@ To obtain the full code, you can clone the git repository:
 .. code-block:: bash
 
    git clone https://github.com/bradkeifer/somfy-rts
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-
 
 Indices and tables
 ==================
