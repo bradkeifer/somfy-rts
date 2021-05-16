@@ -735,7 +735,7 @@ class RTSProtocol(object):
 
         Args:
             logger: If logger is specified, then that logging.Logger object will 
-            be used, otherwise one will be created automatically.
+                be used, otherwise one will be created automatically.
         """
         if logger is None:
             if self._logger is not None:

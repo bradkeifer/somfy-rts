@@ -23,7 +23,7 @@ Connectivity is either via a TCP socket or a serial port.
 API Reference
 -------------
 
-.. automodule:: somfy_rts.rts
+.. autoclass:: somfy_rts.RTSProtocol
    :members:
 
 Developer documentation
