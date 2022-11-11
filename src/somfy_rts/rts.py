@@ -1528,6 +1528,152 @@ class RTSProtocol(object):
                        f'{dct_lock}.')
         return dct_lock
 
+    def set_channel(self, node_addr, channel=int):
+        """Issue a set channel command.
+        
+        Args:
+            node_addr (int): the node address.
+            channel (int): the channel to use. Must be in the range 0-15.
+
+        Returns:
+            True for success, False for failure.
+
+            An explanatory ERROR is logged and a value of False is returned if an invalid
+            parameter is supplied or a protocol error is experienced.
+        """
+                
+        # Byte 10: Data byte 1: Channel Number. min=0, max=15
+        if channel < 0 or channel > 15:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'control_position(): Channel ({channel}) not in range [0-15].')
+                self._msg_error_handler()
+                return False
+            
+        data = channel.to_bytes(1, byteorder='little')
+        
+        frame = self._frame_encode(node_addr, SET_CHANNEL, ACK_REQ, data)
+        self._sock_send(frame)
+        raw_frame = self._frame_read()
+                
+        if raw_frame[0] == ACK_FRAME:
+            self._easy_log(RTS_LOG_DEBUG, f'SET_CHANNEL ACK_FRAME success.')
+            success = True
+        elif raw_frame[0] == NACK_FRAME:
+            if raw_frame[9] == 0x00:
+                self._easy_log(RTS_LOG_DEBUG,
+                               f'SET_CHANNEL NACK_FRAME success.')
+                success = True
+            elif raw_frame[9] == 0x01:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_CHANNEL NACK_FRAME failure: Data ({data}) out of range.')
+                self._msg_error_handler()
+                success = False
+            elif raw_frame[9] == 0x10:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_CHANNEL NACK_FRAME failure: Unknown message.')
+                self._msg_error_handler()
+                success = False
+            elif raw_frame[9] == 0x11:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_CHANNEL NACK_FRAME failure: Message Length Error.')
+                self._msg_error_handler()
+                success = False
+            elif raw_frame[9] == 0xff:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_CHANNEL NACK_FRAME failure: Busy - '
+                               f'Cannot process message.')
+                self._msg_error_handler()
+                success = False
+            else:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_CHANNEL NACK_FRAME failure: Status data '
+                               f'0x{raw_frame[9]:02x} invalid.')
+                self._msg_error_handler()
+                success = False
+
+        else:
+            self._easy_log(RTS_LOG_ERROR,
+                           f'SET_CHANNEL reply format invalid. '
+                           f'MSG byte should be ACK or NACK '
+                           f'but is {RTS_MSG[raw_frame[0]]}.')
+            self._msg_error_handler()
+            success = False
+
+        return success
+
+    def set_open_prog(self, node_addr, channel=int):
+        """Send RTS Prog frames to a receiver.
+        
+        Args:
+            node_addr (int): the node address.
+            channel (int): the channel to use. Must be in the range 0-15.
+
+        Returns:
+            True for success, False for failure.
+
+            An explanatory ERROR is logged and a value of False is returned if an invalid
+            parameter is supplied or a protocol error is experienced.
+        """
+                
+        # Byte 10: Data byte 1: Channel Number. min=0, max=15
+        if channel < 0 or channel > 15:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'control_position(): Channel ({channel}) not in range [0-15].')
+                self._msg_error_handler()
+                return False
+            
+        data = channel.to_bytes(1, byteorder='little')
+        
+        frame = self._frame_encode(node_addr, SET_OPEN_PROG, ACK_REQ, data)
+        self._sock_send(frame)
+        raw_frame = self._frame_read()
+                
+        if raw_frame[0] == ACK_FRAME:
+            self._easy_log(RTS_LOG_DEBUG, f'SET_OPEN_PROG ACK_FRAME success.')
+            success = True
+        elif raw_frame[0] == NACK_FRAME:
+            if raw_frame[9] == 0x00:
+                self._easy_log(RTS_LOG_DEBUG,
+                               f'SET_OPEN_PROG NACK_FRAME success.')
+                success = True
+            elif raw_frame[9] == 0x01:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_OPEN_PROG NACK_FRAME failure: Data ({data}) out of range.')
+                self._msg_error_handler()
+                success = False
+            elif raw_frame[9] == 0x10:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_OPEN_PROG NACK_FRAME failure: Unknown message.')
+                self._msg_error_handler()
+                success = False
+            elif raw_frame[9] == 0x11:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_OPEN_PROG NACK_FRAME failure: Message Length Error.')
+                self._msg_error_handler()
+                success = False
+            elif raw_frame[9] == 0xff:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_OPEN_PROG NACK_FRAME failure: Busy - '
+                               f'Cannot process message.')
+                self._msg_error_handler()
+                success = False
+            else:
+                self._easy_log(RTS_LOG_ERROR,
+                               f'SET_OPEN_PROG NACK_FRAME failure: Status data '
+                               f'0x{raw_frame[9]:02x} invalid.')
+                self._msg_error_handler()
+                success = False
+
+        else:
+            self._easy_log(RTS_LOG_ERROR,
+                           f'SET_OPEN_PROG reply format invalid. '
+                           f'MSG byte should be ACK or NACK '
+                           f'but is {RTS_MSG[raw_frame[0]]}.')
+            self._msg_error_handler()
+            success = False
+
+        return success
+
 
 # Testing stub
 if __name__ == "__main__":
@@ -1622,6 +1768,26 @@ if __name__ == "__main__":
             label = input(f'Enter new label for node address 0x{node_addr:06x}: ')
             success = som.set_node_label(node_addr, label)
             logger.info(f'Set label to {label}. Success was {success}.')
+    
+    set_channel = 'n'
+    set_channel = input('Would you like to test set_channel [Y/n]: ')
+    if set_channel == 'Y':
+        logger.info('OK. Setting Channel')
+        for node_addr, node_label in nodes.items():
+            channel = 0
+            channel = int(input(f'Enter channel number for node address 0x{node_addr:06x}: '))
+            success = som.set_channel(node_addr, channel)
+            logger.info(f'Set channel on channel number {channel}. Success was {success}.')
+    
+    set_prog = 'n'
+    set_prog = input('Would you like to test set_open_prog [Y/n]: ')
+    if set_prog == 'Y':
+        logger.info('OK. Set Open Prog')
+        for node_addr, node_label in nodes.items():
+            channel = 0
+            channel = int(input(f'Enter channel number for node address 0x{node_addr:06x}: '))
+            success = som.set_open_prog(node_addr, channel)
+            logger.info(f'Set open prog on channel number {channel}. Success was {success}.')
 
     som.ping()
     

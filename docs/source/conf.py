@@ -20,11 +20,11 @@ sys.path.insert(0, os.path.abspath('../../src'))
 # -- Project information -----------------------------------------------------
 
 project = 'somfy_rts'
-copyright = '2021, Brad Keifer'
+copyright = '2021 - 2022, Brad Keifer'
 author = 'Brad Keifer'
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.0'
+release = '1.2.0'
 
 
 # -- General configuration ---------------------------------------------------
